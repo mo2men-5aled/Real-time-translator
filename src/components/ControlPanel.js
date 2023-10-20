@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { HStack, Select, Box, Button } from '@chakra-ui/react';
 import { ChevronRightIcon } from '@chakra-ui/icons';
 import VoiceStreamer from './voiceInput';
@@ -10,6 +11,46 @@ const ControlPanel = ({
   setText,
   text,
 }) => {
+  const [websocket, setWebsocket] = useState(null);
+
+  // Create a WebSocket connection
+  const initializeWebSocket = () => {
+    const ws = new WebSocket('ws://localhost:8000');
+
+    setWebsocket(ws);
+
+    ws.onopen = () => {
+      console.log('WebSocket connected');
+    };
+
+    ws.onclose = () => {
+      console.log('WebSocket connection closed');
+    };
+
+    ws.onerror = error => {
+      console.error('WebSocket error:', error);
+    };
+  };
+  useEffect(() => {
+    initializeWebSocket();
+  }, []);
+
+  const sendToServer = data => {
+    if (websocket && websocket.readyState === WebSocket.OPEN) {
+      websocket.send(JSON.stringify(data));
+    }
+  };
+
+  const handleTranslation = () => {
+    const data = {
+      from: fromLanguage,
+      to: toLanguage,
+      text: text,
+    };
+    sendToServer(data);
+    console.log('Data sent to the server:', data);
+  };
+
   const languageOptions = [
     { value: 'en-US', label: 'English' },
     { value: 'es-US', label: 'Spanish' },
@@ -21,14 +62,6 @@ const ControlPanel = ({
     // Add more language options here
   ];
 
-  const data = {
-    from: fromLanguage,
-    to: toLanguage,
-    text: text,
-  };
-  const handleTranslation = () => {
-    console.log(data);
-  };
   return (
     <Box width={'full'} marginBottom={'1rem'}>
       <HStack spacing={4}>
