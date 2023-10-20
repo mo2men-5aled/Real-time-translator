@@ -48,7 +48,7 @@ const Dictaphone = ({ fromLanguage, setText, toLanguage }) => {
       </Button>
 
       <Button
-        isDisabled={listening ? true : false}
+        isDisabled={listening || !transcript ? true : false}
         onClick={handleResetText}
         colorScheme="red"
       >
