@@ -38,8 +38,9 @@ const Dictaphone = ({ fromLanguage, setText, toLanguage }) => {
   }
 
   return (
-    <HStack>
+    <HStack width={'full'}>
       <Button
+        width={'full'}
         isDisabled={fromLanguage && toLanguage ? false : true}
         onClick={listening ? handleStopListening : handleStartListenign}
         colorScheme={listening ? 'blue' : 'teal'}
@@ -48,6 +49,7 @@ const Dictaphone = ({ fromLanguage, setText, toLanguage }) => {
       </Button>
 
       <Button
+        width={'full'}
         isDisabled={listening || !transcript ? true : false}
         onClick={handleResetText}
         colorScheme="red"

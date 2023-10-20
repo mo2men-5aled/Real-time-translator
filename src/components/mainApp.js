@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, VStack, Text, Flex, Highlight } from '@chakra-ui/react';
+import { Box, VStack, Text, Flex, Highlight, Textarea } from '@chakra-ui/react';
 
 import LanguageSelector from './ControlPanel';
 
@@ -29,6 +29,10 @@ const TranslationBox = ({ translation }) => {
     translationChunk.length && translationBoxes.push(translationChunk);
   }
 
+  const handleInputChange = e => {
+    setText(e.target.value);
+  };
+
   return (
     <Box width={'full'}>
       <LanguageSelector
@@ -41,44 +45,23 @@ const TranslationBox = ({ translation }) => {
       />
       <Flex width={'full'} gap={4}>
         <VStack width={'full'} spacing={4}>
-          {textBoxes.map((textChunk, index) => (
-            <Box
-              key={index}
-              padding={4}
-              borderWidth="0.1rem"
-              borderRadius="md"
-              mr={2} // Margin to separate the boxes
-              width={'full'}
-            >
-              <Text fontWeight="bold">
-                {index === 0 ? 'Original Text:' : ''}
-              </Text>
-              <Box width="100%">
-                {textChunk.map((phrase, phraseIndex) => (
-                  <Text
-                    lineHeight={'tall'}
-                    key={phraseIndex}
-                    style={{ marginLeft: `${phraseIndex * 1}rem` }}
-                  >
-                    <Highlight
-                      query={HilightWords}
-                      styles={{
-                        px: '2',
-                        py: '1',
-                        rounded: 'full',
-                        bg: 'red.100',
-                      }}
-                    >
-                      {phrase}
-                    </Highlight>
-                  </Text>
-                ))}
-              </Box>
-            </Box>
-          ))}
+          <Text fontWeight="bold" fontSize={'lg'}>
+            Original Text
+          </Text>
+          <Textarea
+            width={'full'}
+            value={text}
+            onChange={handleInputChange}
+            placeholder="Enter text here"
+            resize="vertical"
+            rows={10}
+          />
         </VStack>
 
         <VStack spacing={4} width={'full'}>
+          <Text fontWeight="bold" fontSize={'lg'}>
+            Translation
+          </Text>
           {translationBoxes.map((translationChunk, index) => (
             <Box
               key={index}
@@ -87,7 +70,6 @@ const TranslationBox = ({ translation }) => {
               borderRadius="md"
               width={'full'}
             >
-              <Text fontWeight="bold">{index === 0 ? 'Translation:' : ''}</Text>
               <Box width="100%">
                 {translationChunk.map((phrase, phraseIndex) => (
                   <Text
