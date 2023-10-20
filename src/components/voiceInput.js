@@ -3,9 +3,13 @@ import SpeechRecognition, {
   useSpeechRecognition,
 } from 'react-speech-recognition';
 
-import { Button, HStack } from '@chakra-ui/react';
+import { Button, HStack, Icon } from '@chakra-ui/react';
 
-const Dictaphone = ({ fromLanguage, setText, toLanguage }) => {
+import { BsFillMicFill, BsFillMicMuteFill } from 'react-icons/bs';
+
+import { CgPlayListRemove } from 'react-icons/cg';
+
+const Dictaphone = ({ fromLanguage, setText, toLanguage, text }) => {
   const {
     transcript,
     listening,
@@ -44,15 +48,17 @@ const Dictaphone = ({ fromLanguage, setText, toLanguage }) => {
         isDisabled={fromLanguage && toLanguage ? false : true}
         onClick={listening ? handleStopListening : handleStartListenign}
         colorScheme={listening ? 'blue' : 'teal'}
+        leftIcon={<Icon as={listening ? BsFillMicMuteFill : BsFillMicFill} />}
       >
         {listening ? 'Stop' : 'Start'}
       </Button>
 
       <Button
         width={'full'}
-        isDisabled={listening || !transcript ? true : false}
+        isDisabled={listening || (!transcript && !text) ? true : false}
         onClick={handleResetText}
         colorScheme="red"
+        leftIcon={<Icon as={CgPlayListRemove} />}
       >
         Remove Text
       </Button>

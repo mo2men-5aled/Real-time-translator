@@ -5,9 +5,11 @@ import LanguageSelector from './ControlPanel';
 
 const MAX_PHRASES = 4;
 
-const TranslationBox = ({ translation }) => {
+const TranslationBox = () => {
   const [fromLanguage, setFromLanguage] = useState('');
   const [toLanguage, setToLanguage] = useState('');
+
+  const [translation, setTranslation] = useState('');
 
   const [text, setText] = useState('');
   // Split the translation into phrases
@@ -36,8 +38,9 @@ const TranslationBox = ({ translation }) => {
   return (
     <Box width={'full'}>
       <LanguageSelector
-        setText={setText}
         text={text}
+        setText={setText}
+        setTranslation={setTranslation}
         setFromLanguage={setFromLanguage}
         setToLanguage={setToLanguage}
         fromLanguage={fromLanguage}

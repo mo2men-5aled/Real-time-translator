@@ -8,13 +8,15 @@ import {
   Icon,
   Text,
 } from '@chakra-ui/react';
-import { FiFile } from 'react-icons/fi';
 
-import { ChevronRightIcon } from '@chakra-ui/icons';
+import { IoIosCloudUpload } from 'react-icons/io';
+
+import { ChevronRightIcon, DeleteIcon } from '@chakra-ui/icons';
 import VoiceStreamer from './voiceInput';
 
 import FileUpload from './fileUploadeButton';
 import VideoPlayer from './VideoPlayer';
+import { HiTranslate } from 'react-icons/hi';
 
 const ControlPanel = ({
   fromLanguage,
@@ -23,6 +25,7 @@ const ControlPanel = ({
   setToLanguage,
   setText,
   text,
+  setTranslation,
 }) => {
   const [websocket, setWebsocket] = useState(null);
 
@@ -61,6 +64,10 @@ const ControlPanel = ({
   const sendToServer = data => {
     if (websocket && websocket.readyState === WebSocket.OPEN) {
       websocket.send(JSON.stringify(data));
+      websocket.onmessage = e => {
+        const data = JSON.parse(e.data);
+        setTranslation(data.text);
+      };
     }
   };
 
@@ -84,6 +91,10 @@ const ControlPanel = ({
 
     // Add more language options here
   ];
+
+  const handleFileDeletion = () => {
+    setSelectedFile(null);
+  };
 
   return (
     <Box width={'full'} marginBottom={'1rem'}>
@@ -113,6 +124,7 @@ const ControlPanel = ({
         </HStack>
         <HStack width={'full'}>
           <VoiceStreamer
+            text={text}
             setText={setText}
             fromLanguage={fromLanguage}
             toLanguage={toLanguage}
@@ -122,8 +134,9 @@ const ControlPanel = ({
             onClick={handleTranslation}
             colorScheme="yellow"
             width={'full'}
+            leftIcon={<Icon as={HiTranslate} />}
           >
-            translate
+            Translate
           </Button>
 
           <FileUpload
@@ -134,11 +147,22 @@ const ControlPanel = ({
             <Button
               isDisabled={fromLanguage && toLanguage ? false : true}
               width={'full'}
-              leftIcon={<Icon as={FiFile} />}
+              leftIcon={<Icon as={IoIosCloudUpload} />}
+              colorScheme="green"
             >
               Upload
             </Button>
           </FileUpload>
+
+          <Button
+            isDisabled={selectedFile ? false : true}
+            width={'full'}
+            leftIcon={<Icon as={DeleteIcon} />}
+            onClick={handleFileDeletion}
+            colorScheme="red"
+          >
+            Remove media
+          </Button>
         </HStack>
 
         {selectedFile && (

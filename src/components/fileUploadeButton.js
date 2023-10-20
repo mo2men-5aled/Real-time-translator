@@ -1,3 +1,4 @@
+import { Box } from '@chakra-ui/react';
 import React, { useRef } from 'react';
 
 const FileUpload = ({ accept, multiple, children, handleChange }) => {
@@ -6,7 +7,7 @@ const FileUpload = ({ accept, multiple, children, handleChange }) => {
   const handleClick = () => inputRef.current.click();
 
   return (
-    <div onClick={handleClick}>
+    <Box onClick={handleClick} cursor="pointer" width={'full'}>
       <input
         type="file"
         multiple={multiple || false}
@@ -18,7 +19,7 @@ const FileUpload = ({ accept, multiple, children, handleChange }) => {
         onChange={handleChange}
       />
       {children}
-    </div>
+    </Box>
   );
 };
 
