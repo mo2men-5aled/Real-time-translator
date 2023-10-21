@@ -106,7 +106,7 @@ const ControlPanel = ({
       <Button
         isDisabled={selectedFile ? false : true}
         width={'full'}
-        leftIcon={<Icon as={DeleteIcon} />}
+        // leftIcon={<Icon as={DeleteIcon} />}
         onClick={handleFileDeletion}
         colorScheme="red"
         size="sm"

@@ -66,7 +66,7 @@ const Dictaphone = ({
         isDisabled={listening || (!transcript && !text) ? true : false}
         onClick={handleResetText}
         colorScheme="red"
-        leftIcon={<Icon as={CgPlayListRemove} />}
+        // leftIcon={<Icon as={CgPlayListRemove} />}
         size="sm"
         width={'full'}
       >
