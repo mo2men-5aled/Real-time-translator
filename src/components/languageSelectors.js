@@ -14,7 +14,7 @@ const LnaguageSelectors = ({ setFromLanguage, setToLanguage, isSpeaking }) => {
     // Add more language options here
   ];
   return (
-    <HStack width={'full'}>
+    <HStack width={'full'} pt={'1rem'} pb={'1rem'}>
       <Select
         isDisabled={isSpeaking ? true : false}
         placeholder="Translate from"

@@ -1,4 +1,3 @@
-import React from 'react';
 import SpeechRecognition, {
   useSpeechRecognition,
 } from 'react-speech-recognition';
@@ -53,21 +52,23 @@ const Dictaphone = ({
   return (
     <HStack width={'full'}>
       <Button
-        width={'full'}
         isDisabled={fromLanguage && toLanguage && !selectedFile ? false : true}
         onClick={listening ? handleStopListening : handleStartListenign}
         colorScheme={listening ? 'blue' : 'teal'}
         leftIcon={<Icon as={listening ? BsFillMicMuteFill : BsFillMicFill} />}
+        size="sm"
+        width={'full'}
       >
         {listening ? 'Stop' : 'Start'}
       </Button>
 
       <Button
-        width={'full'}
         isDisabled={listening || (!transcript && !text) ? true : false}
         onClick={handleResetText}
         colorScheme="red"
         leftIcon={<Icon as={CgPlayListRemove} />}
+        size="sm"
+        width={'full'}
       >
         Remove Text
       </Button>

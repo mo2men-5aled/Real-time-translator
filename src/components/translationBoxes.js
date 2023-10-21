@@ -1,33 +1,14 @@
-import { useState } from 'react';
 import { Box, VStack, Text, Flex, Textarea } from '@chakra-ui/react';
 
 import HighlightedText from './HighlightedText';
 
-import ControlPanel from './ControlPanel';
-
-const TranslationBox = () => {
-  const [fromLanguage, setFromLanguage] = useState('');
-  const [toLanguage, setToLanguage] = useState('');
-  const [text, setText] = useState('');
-  const [translation, setTranslation] = useState('');
-
+const TranslationBoxes = ({ text, setText, translation }) => {
   const handleInputChange = e => {
     setText(e.target.value);
-    setTranslation(e.target.value);
   };
 
   return (
     <Box width={'full'}>
-      <ControlPanel
-        text={text}
-        setText={setText}
-        translation={translation}
-        setTranslation={setTranslation}
-        setFromLanguage={setFromLanguage}
-        setToLanguage={setToLanguage}
-        fromLanguage={fromLanguage}
-        toLanguage={toLanguage}
-      />
       <Flex width={'full'} gap={4}>
         <VStack width={'50%'} spacing={4}>
           <Text fontWeight="bold" fontSize={'lg'}>
@@ -54,4 +35,4 @@ const TranslationBox = () => {
   );
 };
 
-export default TranslationBox;
+export default TranslationBoxes;

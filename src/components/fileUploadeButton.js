@@ -7,7 +7,7 @@ const FileUpload = ({ accept, multiple, children, handleChange }) => {
   const handleClick = () => inputRef.current.click();
 
   return (
-    <Box onClick={handleClick} cursor="pointer" width={'full'}>
+    <Box onClick={handleClick}>
       <input
         type="file"
         multiple={multiple || false}
