@@ -31,12 +31,13 @@ const ControlPanel = ({
 
   const [selectedFile, setSelectedFile] = useState(null);
 
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
   const mediaRef = useRef(null);
 
   const handleFileChange = e => {
     const file = e.target.files[0];
     setSelectedFile(file);
-    console.log(file);
   };
 
   // Create a WebSocket connection
@@ -76,6 +77,7 @@ const ControlPanel = ({
       from: fromLanguage,
       to: toLanguage,
       text: text,
+      media: selectedFile,
     };
     sendToServer(data);
     console.log('Data sent to the server:', data);
@@ -128,9 +130,15 @@ const ControlPanel = ({
             setText={setText}
             fromLanguage={fromLanguage}
             toLanguage={toLanguage}
+            selectedFile={selectedFile}
+            setIsSpeaking={setIsSpeaking}
           />
           <Button
-            isDisabled={fromLanguage && toLanguage && text ? false : true}
+            isDisabled={
+              fromLanguage && toLanguage && (text || selectedFile)
+                ? false
+                : true
+            }
             onClick={handleTranslation}
             colorScheme="yellow"
             width={'full'}
@@ -145,7 +153,11 @@ const ControlPanel = ({
             handleChange={handleFileChange}
           >
             <Button
-              isDisabled={fromLanguage && toLanguage ? false : true}
+              isDisabled={
+                fromLanguage && toLanguage && !(isSpeaking || text)
+                  ? false
+                  : true
+              }
               width={'full'}
               leftIcon={<Icon as={IoIosCloudUpload} />}
               colorScheme="green"

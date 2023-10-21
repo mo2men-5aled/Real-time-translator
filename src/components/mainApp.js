@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Box, VStack, Text, Flex, Highlight, Textarea } from '@chakra-ui/react';
 
-import LanguageSelector from './ControlPanel';
+import ControlPanel from './ControlPanel';
 
 const MAX_PHRASES = 4;
 
@@ -33,11 +33,12 @@ const TranslationBox = () => {
 
   const handleInputChange = e => {
     setText(e.target.value);
+    setTranslation(e.target.value);
   };
 
   return (
     <Box width={'full'}>
-      <LanguageSelector
+      <ControlPanel
         text={text}
         setText={setText}
         setTranslation={setTranslation}

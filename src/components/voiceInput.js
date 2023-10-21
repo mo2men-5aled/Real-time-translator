@@ -9,7 +9,14 @@ import { BsFillMicFill, BsFillMicMuteFill } from 'react-icons/bs';
 
 import { CgPlayListRemove } from 'react-icons/cg';
 
-const Dictaphone = ({ fromLanguage, setText, toLanguage, text }) => {
+const Dictaphone = ({
+  fromLanguage,
+  setText,
+  toLanguage,
+  text,
+  selectedFile,
+  setIsSpeaking,
+}) => {
   const {
     transcript,
     listening,
@@ -26,10 +33,12 @@ const Dictaphone = ({ fromLanguage, setText, toLanguage, text }) => {
       continuous: true,
       language: fromLanguage,
     });
+    setIsSpeaking(true);
   };
 
   const handleStopListening = () => {
     SpeechRecognition.stopListening();
+    setIsSpeaking(false);
   };
 
   const handleResetText = () => {
@@ -45,7 +54,7 @@ const Dictaphone = ({ fromLanguage, setText, toLanguage, text }) => {
     <HStack width={'full'}>
       <Button
         width={'full'}
-        isDisabled={fromLanguage && toLanguage ? false : true}
+        isDisabled={fromLanguage && toLanguage && !selectedFile ? false : true}
         onClick={listening ? handleStopListening : handleStartListenign}
         colorScheme={listening ? 'blue' : 'teal'}
         leftIcon={<Icon as={listening ? BsFillMicMuteFill : BsFillMicFill} />}
