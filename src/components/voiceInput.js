@@ -4,18 +4,17 @@ import SpeechRecognition, {
 } from 'react-speech-recognition';
 
 import { Button, HStack, Icon } from '@chakra-ui/react';
-
 import { BsFillMicFill, BsFillMicMuteFill } from 'react-icons/bs';
-
 import { CgPlayListRemove } from 'react-icons/cg';
 
 const Dictaphone = ({
-  fromLanguage,
-  setText,
-  toLanguage,
   text,
+  setText,
+  fromLanguage,
+  toLanguage,
   selectedFile,
   setIsSpeaking,
+  setTranslation,
 }) => {
   const {
     transcript,
@@ -44,6 +43,7 @@ const Dictaphone = ({
   const handleResetText = () => {
     resetTranscript();
     setText('');
+    setTranslation('');
   };
 
   if (listening) {

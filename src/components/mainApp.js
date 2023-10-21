@@ -1,35 +1,15 @@
 import { useState } from 'react';
-import { Box, VStack, Text, Flex, Highlight, Textarea } from '@chakra-ui/react';
+import { Box, VStack, Text, Flex, Textarea } from '@chakra-ui/react';
+
+import HighlightedText from './HighlightedText';
 
 import ControlPanel from './ControlPanel';
-
-const MAX_PHRASES = 4;
 
 const TranslationBox = () => {
   const [fromLanguage, setFromLanguage] = useState('');
   const [toLanguage, setToLanguage] = useState('');
-
-  const [translation, setTranslation] = useState('');
-
   const [text, setText] = useState('');
-  // Split the translation into phrases
-  const textPhrases = text.split('. '); // Assuming that periods represent the end of a phrase
-  const translationPhrases = translation.split('. ');
-
-  const textBoxes = [];
-  const translationBoxes = [];
-
-  const HilightWords = ['momen', 'contains ', 'Lorem', 'phrases', '112', '150'];
-
-  for (let i = 0; i < textPhrases.length; i += MAX_PHRASES) {
-    const textChunk = textPhrases.slice(i, i + MAX_PHRASES);
-    textChunk.length && textBoxes.push(textChunk);
-  }
-
-  for (let i = 0; i < translationPhrases.length; i += MAX_PHRASES) {
-    const translationChunk = translationPhrases.slice(i, i + MAX_PHRASES);
-    translationChunk.length && translationBoxes.push(translationChunk);
-  }
+  const [translation, setTranslation] = useState('');
 
   const handleInputChange = e => {
     setText(e.target.value);
@@ -41,6 +21,7 @@ const TranslationBox = () => {
       <ControlPanel
         text={text}
         setText={setText}
+        translation={translation}
         setTranslation={setTranslation}
         setFromLanguage={setFromLanguage}
         setToLanguage={setToLanguage}
@@ -48,7 +29,7 @@ const TranslationBox = () => {
         toLanguage={toLanguage}
       />
       <Flex width={'full'} gap={4}>
-        <VStack width={'full'} spacing={4}>
+        <VStack width={'50%'} spacing={4}>
           <Text fontWeight="bold" fontSize={'lg'}>
             Original Text
           </Text>
@@ -62,41 +43,11 @@ const TranslationBox = () => {
           />
         </VStack>
 
-        <VStack spacing={4} width={'full'}>
+        <VStack spacing={4} width={'50%'}>
           <Text fontWeight="bold" fontSize={'lg'}>
             Translation
           </Text>
-          {translationBoxes.map((translationChunk, index) => (
-            <Box
-              key={index}
-              padding={4}
-              borderWidth="0.1rem"
-              borderRadius="md"
-              width={'full'}
-            >
-              <Box width="100%">
-                {translationChunk.map((phrase, phraseIndex) => (
-                  <Text
-                    lineHeight={'tall'}
-                    key={phraseIndex}
-                    style={{ marginLeft: `${phraseIndex * 1}rem` }}
-                  >
-                    <Highlight
-                      query={HilightWords}
-                      styles={{
-                        px: '2',
-                        py: '1',
-                        rounded: 'full',
-                        bg: 'red.100',
-                      }}
-                    >
-                      {phrase}
-                    </Highlight>
-                  </Text>
-                ))}
-              </Box>
-            </Box>
-          ))}
+          <HighlightedText text={translation} />
         </VStack>
       </Flex>
     </Box>

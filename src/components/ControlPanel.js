@@ -11,8 +11,10 @@ import {
 
 import { IoIosCloudUpload } from 'react-icons/io';
 
-import { ChevronRightIcon, DeleteIcon } from '@chakra-ui/icons';
-import VoiceStreamer from './voiceInput';
+import { BsArrowRight } from 'react-icons/bs';
+
+import { DeleteIcon } from '@chakra-ui/icons';
+import Dictaphone from './voiceInput';
 
 import FileUpload from './fileUploadeButton';
 import VideoPlayer from './VideoPlayer';
@@ -26,11 +28,10 @@ const ControlPanel = ({
   setText,
   text,
   setTranslation,
+  translation,
 }) => {
   const [websocket, setWebsocket] = useState(null);
-
   const [selectedFile, setSelectedFile] = useState(null);
-
   const [isSpeaking, setIsSpeaking] = useState(false);
 
   const mediaRef = useRef(null);
@@ -103,6 +104,7 @@ const ControlPanel = ({
       <VStack spacing={4} width={'full'}>
         <HStack width={'full'}>
           <Select
+            isDisabled={isSpeaking ? true : false}
             placeholder="Translate from"
             onChange={e => setFromLanguage(e.target.value)}
           >
@@ -112,8 +114,10 @@ const ControlPanel = ({
               </option>
             ))}
           </Select>
-          <ChevronRightIcon />
+          <Icon as={BsArrowRight} color="gray.500" viewBox="0 0 100% 4" />
+
           <Select
+            isDisabled={isSpeaking ? true : false}
             placeholder="Translate to"
             onChange={e => setToLanguage(e.target.value)}
           >
@@ -125,13 +129,14 @@ const ControlPanel = ({
           </Select>
         </HStack>
         <HStack width={'full'}>
-          <VoiceStreamer
+          <Dictaphone
             text={text}
             setText={setText}
             fromLanguage={fromLanguage}
             toLanguage={toLanguage}
             selectedFile={selectedFile}
             setIsSpeaking={setIsSpeaking}
+            setTranslation={setTranslation}
           />
           <Button
             isDisabled={
