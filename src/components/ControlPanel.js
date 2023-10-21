@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { HStack, VStack, Box, Button, Icon } from '@chakra-ui/react';
+import { HStack, Button, Icon } from '@chakra-ui/react';
 
 import { IoIosCloudUpload } from 'react-icons/io';
 
