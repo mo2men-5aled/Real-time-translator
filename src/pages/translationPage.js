@@ -37,12 +37,9 @@ const TranslationPage = () => {
           toLanguage={toLanguage}
           text={text}
           setTranslation={setTranslation}
-          setText={setText}
-          translation={translation}
-          setFromLanguage={setFromLanguage}
-          setToLanguage={setToLanguage}
           setSelectedFile={setSelectedFile}
           selectedFile={selectedFile}
+          isSpeaking={isSpeaking}
         />
       </HStack>
       <MediaViewBox selectedFile={selectedFile} />
