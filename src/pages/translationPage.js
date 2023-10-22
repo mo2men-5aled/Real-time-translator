@@ -15,6 +15,8 @@ const TranslationPage = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [translation, setTranslation] = useState('');
 
+  const [websocket, setWebsocket] = useState(null);
+
   return (
     <Box width={'full'}>
       <LnaguageSelectors
@@ -40,6 +42,8 @@ const TranslationPage = () => {
           setSelectedFile={setSelectedFile}
           selectedFile={selectedFile}
           isSpeaking={isSpeaking}
+          websocket={websocket}
+          setWebsocket={setWebsocket}
         />
       </HStack>
       <MediaViewBox selectedFile={selectedFile} />
