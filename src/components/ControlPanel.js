@@ -17,6 +17,7 @@ const ControlPanel = ({
   isSpeaking,
   websocket,
   setWebsocket,
+  setHighlightWords,
 }) => {
   const handleFileChange = e => {
     const file = e.target.files[0];
@@ -32,7 +33,8 @@ const ControlPanel = ({
       websocket.send(JSON.stringify(data));
       websocket.onmessage = e => {
         const data = JSON.parse(e.data);
-        setTranslation(data);
+        setTranslation(data.message);
+        setHighlightWords(data.highlightWords);
       };
     }
   };

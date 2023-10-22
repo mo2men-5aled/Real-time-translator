@@ -2,7 +2,7 @@ import { Box, VStack, Text, Flex, Textarea } from '@chakra-ui/react';
 
 import HighlightedText from './HighlightedText';
 
-const TranslationBoxes = ({ text, setText, translation }) => {
+const TranslationBoxes = ({ text, setText, translation, highlightWords }) => {
   const handleInputChange = e => {
     setText(e.target.value);
   };
@@ -28,7 +28,7 @@ const TranslationBoxes = ({ text, setText, translation }) => {
           <Text fontWeight="bold" fontSize={'lg'}>
             Translation
           </Text>
-          <HighlightedText text={translation} />
+          <HighlightedText text={translation} highlightWords={highlightWords} />
         </VStack>
       </Flex>
     </Box>

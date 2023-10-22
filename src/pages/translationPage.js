@@ -14,6 +14,7 @@ const TranslationPage = () => {
   const [text, setText] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [translation, setTranslation] = useState('');
+  const [highlightWords, setHighlightWords] = useState({});
 
   const [websocket, setWebsocket] = useState(null);
 
@@ -44,6 +45,7 @@ const TranslationPage = () => {
           isSpeaking={isSpeaking}
           websocket={websocket}
           setWebsocket={setWebsocket}
+          setHighlightWords={setHighlightWords}
         />
       </HStack>
       <MediaViewBox selectedFile={selectedFile} />
@@ -51,6 +53,7 @@ const TranslationPage = () => {
         text={text}
         setText={setText}
         translation={translation}
+        highlightWords={highlightWords}
       />
     </Box>
   );
