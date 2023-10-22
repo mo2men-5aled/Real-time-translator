@@ -1,24 +1,14 @@
 import React from 'react';
-
 import { Text, Highlight, Box } from '@chakra-ui/react';
 
-const HighlightedText = ({ text }) => {
-  const HighlightedWords = {
-    names: ['momen', 'ahmed', 'hazem', 'khaled', 'youssef'],
-    countries: ['egypt', 'palestine', 'russia'],
-    cities: ['cairo', 'minya'],
-    animals: ['cat', 'dog'],
-    places: ['fci'],
-    numbers: ['2001'],
-  };
-
+const HighlightedText = ({ text, highlightWords }) => {
   const colorsList = {
-    names: 'blue.400',
-    countries: 'red.400',
-    cities: 'green.400',
-    animals: 'purple.400',
-    places: 'pink.400',
-    numbers: 'yellow.400',
+    name: 'blue.400',
+    country: 'red.400',
+    city: 'green.400',
+    animal: 'purple.400',
+    place: 'pink.400',
+    number: 'yellow.400',
   };
 
   // Split the input text into chunks of four lines
@@ -35,13 +25,14 @@ const HighlightedText = ({ text }) => {
   const highlightText = text => {
     const words = text.split(' ');
     return words.map((word, index) => {
-      for (const category in HighlightedWords) {
-        if (HighlightedWords[category].includes(word)) {
-          const color = colorsList[category];
-
+      for (let i = 0; i < highlightWords.labels.length; i++) {
+        if (highlightWords.labels[i] === word) {
+          const colorLabel = highlightWords.labels[i];
+          const color = colorsList[colorLabel];
+          console.log(color);
           return (
             <Highlight
-              key={word + index + category + colorsList[category]}
+              key={word + index + colorLabel + color}
               query={word}
               styles={{
                 px: '2',
