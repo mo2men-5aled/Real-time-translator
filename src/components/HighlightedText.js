@@ -26,7 +26,7 @@ const HighlightedText = ({ text, highlightWords }) => {
     const words = text.split(' ');
     return words.map((word, index) => {
       for (let i = 0; i < highlightWords.labels.length; i++) {
-        if (highlightWords.labels[i] === word) {
+        if (highlightWords.entity[i] === word) {
           const colorLabel = highlightWords.labels[i];
           const color = colorsList[colorLabel];
           console.log(color);

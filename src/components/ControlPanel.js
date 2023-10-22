@@ -24,17 +24,17 @@ const ControlPanel = ({
     setSelectedFile(file);
   };
 
-  useEffect(() => {
-    initializeWebSocket(setWebsocket, 'ws://localhost:8000');
-  }, [setWebsocket]);
+  // useEffect(() => {
+  //   initializeWebSocket(setWebsocket, 'ws://localhost:8000');
+  // }, [setWebsocket]);
 
   const sendToServer = data => {
     if (websocket && websocket.readyState === WebSocket.OPEN) {
       websocket.send(JSON.stringify(data));
       websocket.onmessage = e => {
         const data = JSON.parse(e.data);
-        setTranslation(data.message);
-        setHighlightWords(data.highlightWords);
+        setTranslation(data.text);
+        setHighlightWords(data.highlightedWords);
       };
     }
   };
@@ -47,7 +47,6 @@ const ControlPanel = ({
       media: selectedFile,
     };
     sendToServer(data);
-    console.log('Data sent to the server:', data);
   };
 
   const handleFileDeletion = () => {
