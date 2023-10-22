@@ -6,7 +6,6 @@ import Dictaphone from '../components/voiceInput';
 import ControlPanel from '../components/ControlPanel';
 import TranslationBoxes from '../components/translationBoxes';
 import MediaViewBox from '../components/MediaViewBox';
-import SpeechRecognitionComponent from '../components/micInput';
 
 const TranslationPage = () => {
   const [fromLanguage, setFromLanguage] = useState('');
@@ -55,9 +54,9 @@ const TranslationPage = () => {
         setText={setText}
         translation={translation}
         highlightWords={highlightWords}
+        fromLanguage={fromLanguage}
+        toLanguage={toLanguage}
       />
-
-      <SpeechRecognitionComponent />
     </Box>
   );
 };

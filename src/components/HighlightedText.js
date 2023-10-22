@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, Highlight, Box } from '@chakra-ui/react';
 
-const HighlightedText = ({ text, highlightWords }) => {
+const HighlightedText = ({ text, highlightWords, toLanguage }) => {
   const colorsList = {
     name: 'blue.400',
     country: 'red.400',
@@ -64,7 +64,7 @@ const HighlightedText = ({ text, highlightWords }) => {
       </Text>
     </Box>
   ) : (
-    <Box width="full" placeholder="hi">
+    <Box width="full" textAlign={toLanguage === 'ar-EG' ? 'right' : 'left'}>
       {chunkedText.map((chunk, index) => (
         <Box
           key={index}
@@ -79,7 +79,11 @@ const HighlightedText = ({ text, highlightWords }) => {
               <Text
                 lineHeight={'tall'}
                 key={phraseIndex}
-                style={{ marginLeft: `${phraseIndex * 1.5}rem` }}
+                style={
+                  toLanguage === 'ar-EG'
+                    ? { marginRight: `${phraseIndex * 1.5}rem` }
+                    : { marginLeft: `${phraseIndex * 1.5}rem` }
+                }
               >
                 {highlightText(phrase)}
               </Text>

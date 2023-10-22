@@ -2,7 +2,14 @@ import { Box, VStack, Text, Flex, Textarea } from '@chakra-ui/react';
 
 import HighlightedText from './HighlightedText';
 
-const TranslationBoxes = ({ text, setText, translation, highlightWords }) => {
+const TranslationBoxes = ({
+  text,
+  setText,
+  translation,
+  highlightWords,
+  fromLanguage,
+  toLanguage,
+}) => {
   const handleInputChange = e => {
     setText(e.target.value);
   };
@@ -21,6 +28,8 @@ const TranslationBoxes = ({ text, setText, translation, highlightWords }) => {
             placeholder="Enter text here"
             resize="vertical"
             rows={10}
+            disabled={fromLanguage === '' ? true : false}
+            textAlign={fromLanguage === 'ar-EG' ? 'right' : 'left'}
           />
         </VStack>
 
@@ -28,7 +37,11 @@ const TranslationBoxes = ({ text, setText, translation, highlightWords }) => {
           <Text fontWeight="bold" fontSize={'lg'}>
             Translation
           </Text>
-          <HighlightedText text={translation} highlightWords={highlightWords} />
+          <HighlightedText
+            text={translation}
+            highlightWords={highlightWords}
+            toLanguage={toLanguage}
+          />
         </VStack>
       </Flex>
     </Box>
