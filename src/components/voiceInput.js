@@ -4,7 +4,6 @@ import SpeechRecognition, {
 
 import { Button, HStack, Icon } from '@chakra-ui/react';
 import { BsFillMicFill, BsFillMicMuteFill } from 'react-icons/bs';
-import { CgPlayListRemove } from 'react-icons/cg';
 
 const Dictaphone = ({
   text,
