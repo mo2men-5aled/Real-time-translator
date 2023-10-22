@@ -4,8 +4,8 @@ import { Text, Highlight, Box } from '@chakra-ui/react';
 
 const HighlightedText = ({ text }) => {
   const HighlightedWords = {
-    names: ['momen', 'ahmed', 'hazem', 'khaled', 'hadeer', 'youssef', 'fofa'],
-    countries: ['egypt', 'palestine', 'danimarkus', 'estonia', 'russia'],
+    names: ['momen', 'ahmed', 'hazem', 'khaled', 'youssef'],
+    countries: ['egypt', 'palestine', 'russia'],
     cities: ['cairo', 'minya'],
     animals: ['cat', 'dog'],
     places: ['fci'],
