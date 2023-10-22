@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { HStack, Button, Icon } from '@chakra-ui/react';
 
 import { IoIosCloudUpload } from 'react-icons/io';
 
 import FileUpload from './fileUploadeButton';
 import { HiTranslate } from 'react-icons/hi';
+import initializeWebSocket from '../connection/wsConnection';
 
 const ControlPanel = ({
   fromLanguage,
@@ -14,42 +15,24 @@ const ControlPanel = ({
   setSelectedFile,
   selectedFile,
   isSpeaking,
+  websocket,
+  setWebsocket,
 }) => {
-  const [websocket, setWebsocket] = useState(null);
-
   const handleFileChange = e => {
     const file = e.target.files[0];
     setSelectedFile(file);
   };
 
-  // Create a WebSocket connection
-  const initializeWebSocket = () => {
-    const ws = new WebSocket('ws://localhost:8000');
-
-    setWebsocket(ws);
-
-    ws.onopen = () => {
-      console.log('WebSocket connected');
-    };
-
-    ws.onclose = () => {
-      console.log('WebSocket connection closed');
-    };
-
-    ws.onerror = error => {
-      console.error('WebSocket error:', error);
-    };
-  };
   useEffect(() => {
-    initializeWebSocket();
-  }, []);
+    initializeWebSocket(setWebsocket, 'ws://localhost:8000');
+  }, [setWebsocket]);
 
   const sendToServer = data => {
     if (websocket && websocket.readyState === WebSocket.OPEN) {
       websocket.send(JSON.stringify(data));
       websocket.onmessage = e => {
         const data = JSON.parse(e.data);
-        setTranslation(data.text);
+        setTranslation(data);
       };
     }
   };
