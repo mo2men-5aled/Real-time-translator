@@ -24,9 +24,9 @@ const ControlPanel = ({
     setSelectedFile(file);
   };
 
-  // useEffect(() => {
-  //   initializeWebSocket(setWebsocket, 'ws://localhost:8000');
-  // }, [setWebsocket]);
+  useEffect(() => {
+    initializeWebSocket(setWebsocket, 'ws://localhost:8000');
+  }, [setWebsocket]);
 
   const sendToServer = data => {
     if (websocket && websocket.readyState === WebSocket.OPEN) {
