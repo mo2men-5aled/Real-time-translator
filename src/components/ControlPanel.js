@@ -3,7 +3,6 @@ import { HStack, Button, Icon } from '@chakra-ui/react';
 
 import { IoIosCloudUpload } from 'react-icons/io';
 
-import { DeleteIcon } from '@chakra-ui/icons';
 import FileUpload from './fileUploadeButton';
 import { HiTranslate } from 'react-icons/hi';
 
