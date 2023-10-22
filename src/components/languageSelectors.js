@@ -10,6 +10,10 @@ const LnaguageSelectors = ({ setFromLanguage, setToLanguage, isSpeaking }) => {
       value: 'ar-EG',
       label: 'Arabic',
     },
+    {
+      value: 'it-IT',
+      label: 'Italian',
+    },
 
     // Add more language options here
   ];
