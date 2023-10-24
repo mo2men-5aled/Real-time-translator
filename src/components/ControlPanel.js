@@ -5,7 +5,7 @@ import { IoIosCloudUpload } from 'react-icons/io';
 
 import FileUpload from './fileUploadeButton';
 import { HiTranslate } from 'react-icons/hi';
-import initializeWebSocket from '../connection/wsConnection';
+// import initializeWebSocket from '../connection/wsConnection';
 
 const ControlPanel = ({
   fromLanguage,
@@ -16,7 +16,7 @@ const ControlPanel = ({
   selectedFile,
   isSpeaking,
   websocket,
-  setWebsocket,
+  // setWebsocket,
   setHighlightWords,
 }) => {
   const handleFileChange = e => {
@@ -24,9 +24,9 @@ const ControlPanel = ({
     setSelectedFile(file);
   };
 
-  useEffect(() => {
-    initializeWebSocket(setWebsocket, 'ws://localhost:8000');
-  }, [setWebsocket]);
+  // useEffect(() => {
+  //   initializeWebSocket(setWebsocket, 'ws://localhost:8000');
+  // }, [setWebsocket]);
 
   const sendToServer = data => {
     if (websocket && websocket.readyState === WebSocket.OPEN) {

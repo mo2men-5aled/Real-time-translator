@@ -1,97 +1,75 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Icon, HStack } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
+import { Button, HStack } from '@chakra-ui/react';
 
-import { BsFillMicFill, BsFillMicMuteFill } from 'react-icons/bs';
-
-const Dectaphone = ({
-  text,
-  setText,
-  fromLanguage,
-  toLanguage,
-  selectedFile,
-  setIsSpeaking,
-  isSpeaking,
-  setTranslation,
-}) => {
-  const [mediaRecorder, setMediaRecorder] = useState(null);
-  const [audioChunks, setAudioChunks] = useState([]);
-  const [websocket, setWebSocket] = useState(null);
+function AudioStreamer() {
+  const [socket, setSocket] = useState(null);
+  const [audioStream, setAudioStream] = useState(null);
+  const [isRecording, setIsRecording] = useState(false);
 
   useEffect(() => {
-    const websocket = new WebSocket('ws://localhost:8000');
-    setWebSocket(websocket);
+    const initAudioStream = async () => {
+      // Initialize the WebSocket connection
+      const ws = new WebSocket('ws://127.0.0.1:8000/audio-stream');
+      setSocket(ws);
 
-    websocket.onopen = function () {
-      console.log('WebSocket connection established.');
+      ws.onopen = () => {
+        console.log('Connected to WebSocket server');
+      };
+
+      ws.onclose = () => {
+        console.log('WebSocket connection closed');
+      };
+
+      // Initialize the audio stream
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      setAudioStream(stream);
     };
-    websocket.onclose = function () {
-      console.log('WebSocket connection closed.');
-    };
-    websocket.onerror = function (error) {
-      console.error('WebSocket error: ', error);
-    };
+
+    initAudioStream();
   }, []);
 
   const startRecording = () => {
-    navigator.mediaDevices
-      .getUserMedia({ audio: true })
-      .then(function (stream) {
-        const recorder = new MediaRecorder(stream);
+    if (audioStream) {
+      const mediaRecorder = new MediaRecorder(audioStream);
+      const recordedChunks = [];
 
-        recorder.ondataavailable = function (e) {
-          if (e.data.size > 0) {
-            setAudioChunks(chunks => [...chunks, e.data]);
-          }
-        };
+      mediaRecorder.ondataavailable = event => {
+        if (event.data.size > 0) {
+          recordedChunks.push(event.data);
+        }
+      };
 
-        recorder.onstop = function () {
-          const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+      mediaRecorder.onstop = () => {
+        if (recordedChunks.length > 0) {
+          const audioBlob = new Blob(recordedChunks, { type: 'audio/wav' });
+          socket.send(audioBlob);
+        }
+      };
 
-          blobToBytes(audioBlob, function (bytes) {
-            websocket.send(JSON.stringify({ bytes }));
-            console.log(bytes.buffer);
-          });
-        };
+      mediaRecorder.start();
+      setIsRecording(true);
 
-        recorder.start();
-        setMediaRecorder(recorder);
-        setIsSpeaking(true);
-      })
-      .catch(function (error) {
-        console.error('Error accessing the microphone:', error);
-      });
+      // Stop recording after a set time or when the user clicks the stop button
+      setTimeout(() => {
+        mediaRecorder.stop();
+      }, 5000); // Adjust the time or use another mechanism to stop recording
+    }
   };
 
   const stopRecording = () => {
-    if (mediaRecorder) {
-      mediaRecorder.stop();
-    }
-
-    setIsSpeaking(false);
+    setIsRecording(false);
   };
 
-  function blobToBytes(blob, callback) {
-    const reader = new FileReader();
-    reader.onload = function (event) {
-      const arrayBuffer = event.target.result;
-      const bytes = new Uint8Array(arrayBuffer);
-      callback(bytes);
-    };
-
-    reader.readAsArrayBuffer(blob);
-  }
-
   return (
-    <Button
-      onClick={isSpeaking ? stopRecording : startRecording}
-      size="sm"
-      colorScheme={isSpeaking ? 'red' : 'blue'}
-      isDisabled={fromLanguage && toLanguage && !selectedFile ? false : true}
-      leftIcon={<Icon as={isSpeaking ? BsFillMicMuteFill : BsFillMicFill} />}
-    >
-      {isSpeaking ? 'Stop' : 'Start'} Speaking
-    </Button>
+    <HStack>
+      <Button onClick={startRecording} disabled={isRecording}>
+        Start Recording
+      </Button>
+      <Button onClick={stopRecording} disabled={!isRecording}>
+        Stop Recording
+      </Button>
+    </HStack>
   );
-};
+}
 
-export default Dectaphone;
+export default AudioStreamer;
