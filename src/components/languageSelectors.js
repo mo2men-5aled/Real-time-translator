@@ -4,14 +4,14 @@ import { BsArrowRight } from 'react-icons/bs';
 
 const LnaguageSelectors = ({ setFromLanguage, setToLanguage, isSpeaking }) => {
   const languageOptions = [
-    { value: 'en-US', label: 'English' },
-    { value: 'es-US', label: 'Spanish' },
+    { value: 'en', label: 'English' },
+    { value: 'es', label: 'Spanish' },
     {
-      value: 'ar-EG',
+      value: 'ar',
       label: 'Arabic',
     },
     {
-      value: 'it-IT',
+      value: 'it',
       label: 'Italian',
     },
 

@@ -5,7 +5,7 @@ import { IoIosCloudUpload } from 'react-icons/io';
 
 import FileUpload from './fileUploadeButton';
 import { HiTranslate } from 'react-icons/hi';
-// import initializeWebSocket from '../connection/wsConnection';
+import initializeWebSocket from '../connection/wsConnection';
 
 const ControlPanel = ({
   fromLanguage,
@@ -16,17 +16,18 @@ const ControlPanel = ({
   selectedFile,
   isSpeaking,
   websocket,
-  // setWebsocket,
-  setHighlightWords,
+  setWebsocket,
+  setTranslationHighlightWords,
+  setSpeechHighlightWords,
 }) => {
   const handleFileChange = e => {
     const file = e.target.files[0];
     setSelectedFile(file);
   };
 
-  // useEffect(() => {
-  //   initializeWebSocket(setWebsocket, 'ws://localhost:8000');
-  // }, [setWebsocket]);
+  useEffect(() => {
+    initializeWebSocket(setWebsocket, 'ws://localhost:8000/audio-stream');
+  }, [setWebsocket]);
 
   const sendToServer = data => {
     if (websocket && websocket.readyState === WebSocket.OPEN) {
@@ -34,7 +35,8 @@ const ControlPanel = ({
       websocket.onmessage = e => {
         const data = JSON.parse(e.data);
         setTranslation(data.text);
-        setHighlightWords(data.highlightedWords);
+        setTranslationHighlightWords(data.highlightedWords);
+        setSpeechHighlightWords(data.speechHighlitedWords);
       };
     }
   };
@@ -54,7 +56,7 @@ const ControlPanel = ({
   };
 
   return (
-    <HStack width={'full'}>
+    <HStack>
       <Button
         isDisabled={
           fromLanguage && toLanguage && (text || selectedFile) ? false : true
@@ -62,8 +64,7 @@ const ControlPanel = ({
         onClick={handleTranslation}
         colorScheme="yellow"
         leftIcon={<Icon as={HiTranslate} />}
-        width={'full'}
-        size="sm"
+        size="md"
       >
         Translate
       </Button>
@@ -77,10 +78,9 @@ const ControlPanel = ({
           isDisabled={
             fromLanguage && toLanguage && !(isSpeaking || text) ? false : true
           }
-          width={'full'}
           leftIcon={<Icon as={IoIosCloudUpload} />}
           colorScheme="green"
-          size="sm"
+          size="md"
         >
           Upload
         </Button>
@@ -88,11 +88,9 @@ const ControlPanel = ({
 
       <Button
         isDisabled={selectedFile ? false : true}
-        width={'full'}
-        // leftIcon={<Icon as={DeleteIcon} />}
         onClick={handleFileDeletion}
         colorScheme="red"
-        size="sm"
+        size="md"
       >
         Remove media
       </Button>

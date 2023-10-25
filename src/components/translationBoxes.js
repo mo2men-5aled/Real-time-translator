@@ -1,4 +1,4 @@
-import { Box, VStack, Text, Flex, Textarea } from '@chakra-ui/react';
+import { Box, VStack, Text, Flex } from '@chakra-ui/react';
 
 import HighlightedText from './HighlightedText';
 
@@ -6,18 +6,19 @@ const TranslationBoxes = ({
   text,
   setText,
   translation,
-  highlightWords,
+  translationHighlightWords,
+  speechHighlightWords,
   fromLanguage,
   toLanguage,
 }) => {
-  const handleInputChange = e => {
-    setText(e.target.value);
-  };
+  // const handleInputChange = e => {
+  //   setText(e.target.value);
+  // };
 
   return (
     <Box width={'full'}>
       <Flex width={'full'} gap={4}>
-        <VStack width={'50%'} spacing={4}>
+        {/* <VStack width={'50%'} spacing={4}>
           <Text fontWeight="bold" fontSize={'lg'}>
             Original Text
           </Text>
@@ -31,6 +32,18 @@ const TranslationBoxes = ({
             disabled={fromLanguage === '' ? true : false}
             textAlign={fromLanguage === 'ar-EG' ? 'right' : 'left'}
           />
+        </VStack> */}
+
+        <VStack spacing={4} width={'50%'}>
+          <Text fontWeight="bold" fontSize={'lg'}>
+            Original Text
+          </Text>
+          <HighlightedText
+            text={text}
+            highlightWords={speechHighlightWords}
+            fromLanguage={fromLanguage}
+            discription={'your speech will be displayed in this section'}
+          />
         </VStack>
 
         <VStack spacing={4} width={'50%'}>
@@ -39,8 +52,9 @@ const TranslationBoxes = ({
           </Text>
           <HighlightedText
             text={translation}
-            highlightWords={highlightWords}
+            highlightWords={translationHighlightWords}
             toLanguage={toLanguage}
+            discription={'Translated text will be displayed in this section'}
           />
         </VStack>
       </Flex>
