@@ -42,7 +42,14 @@ function AudioStreamer() {
       mediaRecorder.onstop = () => {
         if (recordedChunks.length > 0) {
           const audioBlob = new Blob(recordedChunks, { type: 'audio/wav' });
-          socket.send(audioBlob);
+
+          // Convert Blob to base64
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const base64data = reader.result.split(',')[1];
+            socket.send(base64data);
+          };
+          reader.readAsDataURL(audioBlob);
         }
       };
 
