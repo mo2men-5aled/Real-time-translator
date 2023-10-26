@@ -38,23 +38,37 @@ const AudioStreamComponent = ({
         if (e.data.size > 0) {
           audioChunks.push(e.data);
         }
+
         const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
 
-        if (websocket && websocket.readyState === WebSocket.OPEN) {
-          websocket.send(audioBlob);
-          websocket.onmessage = e => {
-            const data = JSON.parse(e.data);
-            setText(data.text);
-            setTranslation(data.translation);
-            setTranslationHighlightWords(data.highlightWords);
-            setSpeechHighlightWords(data.speechHighlitedWords);
+        // Convert audioBlob to Base64
+        const reader = new FileReader();
+        reader.readAsDataURL(audioBlob);
+        reader.onload = () => {
+          const audioBase64 = reader.result.split(',')[1];
+
+          // prepare the data to send to the server
+          const data = {
+            from: fromLanguage,
+            to: toLanguage,
+            data: audioBase64,
           };
-        }
+
+          if (websocket && websocket.readyState === WebSocket.OPEN) {
+            websocket.send(JSON.stringify(data));
+            websocket.onmessage = e => {
+              const data = JSON.parse(e.data);
+              setText(data.text);
+              setTranslation(data.translation);
+              setTranslationHighlightWords(data.translationHighlightWords);
+              setSpeechHighlightWords(data.speechHighlitedWords);
+            };
+          }
+        };
       };
 
       recorder.onstop = () => {
         stream.getTracks().forEach(track => track.stop());
-
         setAudioStream(null);
         setMediaRecorder(null);
       };
