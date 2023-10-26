@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HStack, Button, Icon } from '@chakra-ui/react';
 
 import { IoIosCloudUpload } from 'react-icons/io';
@@ -11,6 +11,7 @@ const ControlPanel = ({
   fromLanguage,
   toLanguage,
   text,
+  setText,
   setTranslation,
   setSelectedFile,
   selectedFile,
@@ -19,9 +20,17 @@ const ControlPanel = ({
   // setWebsocket,
   setHighlightWords,
 }) => {
+  const [base64Media, setBase64Media] = useState(null);
   const handleFileChange = e => {
     const file = e.target.files[0];
     setSelectedFile(file);
+    // convert the uploaded file to base64
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      const base64data = reader.result.split(',')[1];
+      setBase64Media(base64data);
+    };
   };
 
   // useEffect(() => {
@@ -30,10 +39,16 @@ const ControlPanel = ({
 
   const sendToServer = data => {
     if (websocket && websocket.readyState === WebSocket.OPEN) {
+      const data = {
+        from: fromLanguage,
+        to: toLanguage,
+        data: base64Media,
+      };
       websocket.send(JSON.stringify(data));
       websocket.onmessage = e => {
         const data = JSON.parse(e.data);
-        setTranslation(data.text);
+        setTranslation(data.translation);
+        setText(data.text);
         setHighlightWords(data.highlightedWords);
       };
     }

@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Button, HStack } from '@chakra-ui/react';
 
-function AudioStreamer() {
+function AudioStreamer({
+  text,
+  setText,
+  fromLanguage,
+  toLanguage,
+  setTranslation,
+  setHighlightWords,
+}) {
   const [socket, setSocket] = useState(null);
   const [audioStream, setAudioStream] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -47,7 +54,26 @@ function AudioStreamer() {
           const reader = new FileReader();
           reader.onloadend = () => {
             const base64data = reader.result.split(',')[1];
-            socket.send(base64data);
+            socket.send(
+              JSON.stringify({
+                audio: base64data,
+                from: fromLanguage,
+                to: toLanguage,
+              })
+            );
+            socket.onmessage = e => {
+              const data = JSON.parse(e.data);
+              setTranslation(data.translation);
+              setText(data.text);
+              setHighlightWords(data.highlightedWords);
+            };
+            console.log(
+              JSON.stringify({
+                audio: base64data,
+                from: fromLanguage,
+                to: toLanguage,
+              })
+            );
           };
           reader.readAsDataURL(audioBlob);
         }

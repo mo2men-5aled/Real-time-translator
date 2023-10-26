@@ -34,12 +34,14 @@ const TranslationPage = () => {
           selectedFile={selectedFile}
           setIsSpeaking={setIsSpeaking}
           setTranslation={setTranslation}
+          setHighlightWords={setHighlightWords}
           isSpeaking={isSpeaking}
         />
         <ControlPanel
           fromLanguage={fromLanguage}
           toLanguage={toLanguage}
           text={text}
+          setText={setText}
           setTranslation={setTranslation}
           setSelectedFile={setSelectedFile}
           selectedFile={selectedFile}
