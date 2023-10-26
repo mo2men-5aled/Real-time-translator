@@ -12,9 +12,6 @@ const ResetBoxes = ({
     setText('');
     setTranslation('');
   };
-
-  console.log(!!selectedFile);
-
   return (
     <Button
       isDisabled={

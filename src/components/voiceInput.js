@@ -84,6 +84,7 @@ const AudioStreamComponent = ({
   };
 
   const stopAudioStream = () => {
+    setIsSpeaking(false);
     if (mediaRecorder) {
       mediaRecorder.stop();
     }
