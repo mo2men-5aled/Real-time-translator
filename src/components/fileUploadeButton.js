@@ -1,9 +1,6 @@
 import { Box } from '@chakra-ui/react';
-import React, { useRef } from 'react';
 
-const FileUpload = ({ accept, multiple, children, handleChange }) => {
-  const inputRef = useRef(null);
-
+const FileUpload = ({ accept, multiple, children, handleChange, inputRef }) => {
   const handleClick = () => inputRef.current.click();
 
   return (
