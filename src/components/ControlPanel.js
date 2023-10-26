@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { HStack, Button, Icon } from '@chakra-ui/react';
 
 import { IoIosCloudUpload } from 'react-icons/io';
@@ -20,9 +20,19 @@ const ControlPanel = ({
   setTranslationHighlightWords,
   setSpeechHighlightWords,
 }) => {
+  const [mediaOnBase64, setMediaOnBase64] = useState(null);
+  const inputRef = useRef(null); // Create a reference to the file input element
+
   const handleFileChange = e => {
     const file = e.target.files[0];
     setSelectedFile(file);
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const mediaBase64 = reader.result.split(',')[1];
+      setMediaOnBase64(mediaBase64);
+    };
   };
 
   useEffect(() => {
@@ -30,6 +40,7 @@ const ControlPanel = ({
   }, [setWebsocket]);
 
   const sendToServer = data => {
+    console.log(JSON.stringify(data));
     if (websocket && websocket.readyState === WebSocket.OPEN) {
       websocket.send(JSON.stringify(data));
       websocket.onmessage = e => {
@@ -42,17 +53,23 @@ const ControlPanel = ({
   };
 
   const handleTranslation = () => {
+    // prepare data to send to the server
     const data = {
       from: fromLanguage,
       to: toLanguage,
-      text: text,
-      media: selectedFile,
+      data: mediaOnBase64,
     };
     sendToServer(data);
   };
 
   const handleFileDeletion = () => {
+    // remove the uploaded media premanently
     setSelectedFile(null);
+
+    // Clear the file input value
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
   };
 
   return (
@@ -73,6 +90,7 @@ const ControlPanel = ({
         accept={'audio/*,video/*'}
         multiple
         handleChange={handleFileChange}
+        inputRef={inputRef}
       >
         <Button
           isDisabled={
