@@ -45,7 +45,7 @@ const AudioStreamComponent = ({
         const reader = new FileReader();
         reader.readAsDataURL(audioBlob);
         reader.onload = () => {
-          const audioBase64 = reader.result.split(',')[1];
+          const audioBase64 = reader.result;
 
           // prepare the data to send to the server
           const data = {

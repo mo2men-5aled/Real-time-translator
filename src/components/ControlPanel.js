@@ -31,7 +31,7 @@ const ControlPanel = ({
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
-      const mediaBase64 = reader.result.split(',')[1];
+      const mediaBase64 = reader.result;
       setMediaOnBase64(mediaBase64);
     };
   };
