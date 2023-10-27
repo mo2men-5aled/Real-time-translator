@@ -67,6 +67,7 @@ const TranslationPage = () => {
             fromLanguage={fromLanguage}
             toLanguage={toLanguage}
             text={text}
+            setText={setText}
             setTranslation={setTranslation}
             setSelectedFile={setSelectedFile}
             selectedFile={selectedFile}

@@ -11,6 +11,7 @@ const ControlPanel = ({
   fromLanguage,
   toLanguage,
   text,
+  setText,
   setTranslation,
   setSelectedFile,
   selectedFile,
@@ -45,7 +46,8 @@ const ControlPanel = ({
       websocket.send(JSON.stringify(data));
       websocket.onmessage = e => {
         const data = JSON.parse(e.data);
-        setTranslation(data.text);
+        setTranslation(data.translation);
+        setText(data.text);
         setTranslationHighlightWords(data.highlightedWords);
         setSpeechHighlightWords(data.speechHighlitedWords);
       };
