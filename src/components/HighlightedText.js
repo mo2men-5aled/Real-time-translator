@@ -1,18 +1,42 @@
 import React from 'react';
 import { Text, Highlight, Box } from '@chakra-ui/react';
 
-const HighlightedText = ({ text, highlightWords, toLanguage }) => {
-  const colorsList = {
-    name: 'blue.400',
-    country: 'red.400',
-    city: 'green.400',
-    animal: 'purple.400',
-    place: 'pink.400',
-    number: 'yellow.400',
-  };
+const HighlightedText = ({
+  text,
+  highlightWords,
+  fromLanguage,
+  discription,
+}) => {
+  // Function to calculate luminance of an RGB color
+  function getLuminance(rgbColor) {
+    const [r, g, b] = rgbColor.match(/\d+/g);
+    return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  }
 
+  const uniqueLabels = [...new Set(highlightWords.labels)]; // Get unique labels
+
+  const colorsList = {}; // Object to store data for each label
+
+  uniqueLabels.forEach(label => {
+    // Generate a random color in RGB format
+    const color = `rgb(${Math.floor(Math.random() * 255)}, ${Math.floor(
+      Math.random() * 255
+    )}, ${Math.floor(Math.random() * 255)})`;
+
+    // Calculate the luminance of the background color
+    const luminance = getLuminance(color);
+
+    // Determine text color based on luminance
+    const textColor = luminance > 0.5 ? 'black' : 'white';
+
+    colorsList[label] = {
+      background: color,
+      text: textColor,
+    };
+  });
   // Split the input text into chunks of four lines
-  const textChunks = text.split('.');
+  const textChunks = text.split(/[.!?]+/);
+
   const chunkSize = 4;
   const chunkedText = [];
 
@@ -24,12 +48,12 @@ const HighlightedText = ({ text, highlightWords, toLanguage }) => {
   // Function to highlight words based on the rules
   const highlightText = text => {
     const words = text.split(' ');
+
     return words.map((word, index) => {
       for (let i = 0; i < highlightWords.labels.length; i++) {
         if (highlightWords.entity[i] === word) {
           const colorLabel = highlightWords.labels[i];
-          const color = colorsList[colorLabel];
-          console.log(color);
+          const color = colorsList[colorLabel].background;
           return (
             <Highlight
               key={word + index + colorLabel + color}
@@ -40,6 +64,7 @@ const HighlightedText = ({ text, highlightWords, toLanguage }) => {
                 rounded: 'full',
                 bg: color,
                 margin: '0.1rem',
+                color: colorsList[colorLabel].text,
               }}
             >
               {word}
@@ -59,12 +84,20 @@ const HighlightedText = ({ text, highlightWords, toLanguage }) => {
       width={'full'}
       color={'gray.500'}
     >
-      <Text fontWeight={'bold'} textAlign={'center'} padding={'5.62rem'}>
-        Translated text will be displayed in this section
+      <Text
+        fontWeight={'bold'}
+        textAlign={'center'}
+        pt={'4rem'}
+        pb={'4rem'}
+        ps={'2rem'}
+        pe={'2rem'}
+        lineHeight={'tall'}
+      >
+        {discription}
       </Text>
     </Box>
   ) : (
-    <Box width="full" textAlign={toLanguage === 'ar-EG' ? 'right' : 'left'}>
+    <Box width="full" textAlign={fromLanguage === 'ar' ? 'right' : 'left'}>
       {chunkedText.map((chunk, index) => (
         <Box
           key={index}
@@ -80,7 +113,7 @@ const HighlightedText = ({ text, highlightWords, toLanguage }) => {
                 lineHeight={'tall'}
                 key={phraseIndex}
                 style={
-                  toLanguage === 'ar-EG'
+                  fromLanguage === 'ar'
                     ? { marginRight: `${phraseIndex * 1.5}rem` }
                     : { marginLeft: `${phraseIndex * 1.5}rem` }
                 }

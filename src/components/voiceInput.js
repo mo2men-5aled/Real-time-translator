@@ -1,108 +1,126 @@
-import React, { useEffect, useState } from 'react';
-import { Button, HStack } from '@chakra-ui/react';
+import { Icon, Button } from '@chakra-ui/react';
+import { useState, useEffect } from 'react';
 
-function AudioStreamer({
+import { BsFillMicFill, BsFillMicMuteFill } from 'react-icons/bs';
+
+const AudioStreamComponent = ({
+  websocket,
   text,
   setText,
   fromLanguage,
   toLanguage,
+  selectedFile,
+  setIsSpeaking,
   setTranslation,
-  setHighlightWords,
-}) {
-  const [socket, setSocket] = useState(null);
+  setTranslationHighlightWords,
+  setSpeechHighlightWords,
+}) => {
   const [audioStream, setAudioStream] = useState(null);
-  const [isRecording, setIsRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
 
   useEffect(() => {
-    const initAudioStream = async () => {
-      // Initialize the WebSocket connection
-      const ws = new WebSocket('ws://127.0.0.1:8000/audio-stream');
-      setSocket(ws);
-
-      ws.onopen = () => {
-        console.log('Connected to WebSocket server');
-      };
-
-      ws.onclose = () => {
-        console.log('WebSocket connection closed');
-      };
-
-      // Initialize the audio stream
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      setAudioStream(stream);
+    const createAndSendAudioChunk = () => {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.requestData(); // Get the latest audio chunk
+      }
     };
 
-    initAudioStream();
-  }, []);
+    setInterval(createAndSendAudioChunk, 2000);
+  }, [mediaRecorder]);
 
-  const startRecording = () => {
-    if (audioStream) {
-      const mediaRecorder = new MediaRecorder(audioStream);
-      const recordedChunks = [];
+  const startAudioStream = async () => {
+    try {
+      const permissionStatus = await navigator.permissions.query({
+        name: 'microphone',
+      });
 
-      mediaRecorder.ondataavailable = event => {
-        if (event.data.size > 0) {
-          recordedChunks.push(event.data);
-        }
-      };
+      if (permissionStatus.state === 'denied') {
+        alert('Microphone permission denied');
+        return;
+      }
 
-      mediaRecorder.onstop = () => {
-        if (recordedChunks.length > 0) {
-          const audioBlob = new Blob(recordedChunks, { type: 'audio/wav' });
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
 
-          // Convert Blob to base64
+        const recorder = new MediaRecorder(stream);
+        const audioChunks = [];
+
+        recorder.ondataavailable = e => {
+          if (e.data.size > 0) {
+            audioChunks.push(e.data);
+          }
+
+          const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+
+          // Convert audioBlob to Base64
           const reader = new FileReader();
-          reader.onloadend = () => {
-            const base64data = reader.result.split(',')[1];
-            socket.send(
-              JSON.stringify({
-                audio: base64data,
-                from: fromLanguage,
-                to: toLanguage,
-              })
-            );
-            socket.onmessage = e => {
-              const data = JSON.parse(e.data);
-              setTranslation(data.translation);
-              setText(data.text);
-              setHighlightWords(data.highlightedWords);
-            };
-            console.log(
-              JSON.stringify({
-                audio: base64data,
-                from: fromLanguage,
-                to: toLanguage,
-              })
-            );
-          };
           reader.readAsDataURL(audioBlob);
-        }
-      };
+          reader.onload = () => {
+            const audioBase64 = reader.result;
 
-      mediaRecorder.start();
-      setIsRecording(true);
+            // prepare the data to send to the server
+            const data = {
+              from: fromLanguage,
+              to: toLanguage,
+              data: audioBase64,
+            };
 
-      // Stop recording after a set time or when the user clicks the stop button
-      setTimeout(() => {
-        mediaRecorder.stop();
-      }, 5000); // Adjust the time or use another mechanism to stop recording
+            if (websocket && websocket.readyState === WebSocket.OPEN) {
+              websocket.send(JSON.stringify(data));
+              websocket.onmessage = e => {
+                const data = JSON.parse(e.data);
+                setText(data.text);
+                setTranslation(data.translation);
+                setTranslationHighlightWords(data.translationHighlightWords);
+                setSpeechHighlightWords(data.speechHighlitedWords);
+              };
+            }
+          };
+        };
+
+        recorder.onstop = () => {
+          stream.getTracks().forEach(track => track.stop());
+          setAudioStream(null);
+          setMediaRecorder(null);
+        };
+
+        recorder.start();
+
+        setAudioStream(stream);
+        setMediaRecorder(recorder);
+        setIsSpeaking(true);
+      } else {
+        console.error('Browser does not support getUserMedia');
+      }
+    } catch (error) {
+      console.error('Error accessing the microphone:', error);
+    }
+
+    // check if mediaDevices is available for the browser
+  };
+
+  const stopAudioStream = () => {
+    setIsSpeaking(false);
+    if (mediaRecorder) {
+      mediaRecorder.stop();
     }
   };
 
-  const stopRecording = () => {
-    setIsRecording(false);
-  };
-
   return (
-    <HStack>
-      <Button onClick={startRecording} disabled={isRecording}>
-        Start Recording
-      </Button>
-      <Button onClick={stopRecording} disabled={!isRecording}>
-        Stop Recording
-      </Button>
-    </HStack>
+    <Button
+      isDisabled={
+        fromLanguage && toLanguage && !(text || selectedFile) ? false : true
+      }
+      size={'md'}
+      colorScheme={audioStream ? 'red' : 'blue'}
+      onClick={audioStream ? stopAudioStream : startAudioStream}
+      leftIcon={<Icon as={audioStream ? BsFillMicMuteFill : BsFillMicFill} />}
+    >
+      {audioStream ? 'Stop' : 'Start'} Speaking
+    </Button>
   );
-}
+};
 
-export default AudioStreamer;
+export default AudioStreamComponent;

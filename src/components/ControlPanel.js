@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { HStack, Button, Icon } from '@chakra-ui/react';
 
 import { IoIosCloudUpload } from 'react-icons/io';
 
 import FileUpload from './fileUploadeButton';
 import { HiTranslate } from 'react-icons/hi';
-// import initializeWebSocket from '../connection/wsConnection';
+import initializeWebSocket from '../connection/wsConnection';
 
 const ControlPanel = ({
   fromLanguage,
@@ -17,59 +17,65 @@ const ControlPanel = ({
   selectedFile,
   isSpeaking,
   websocket,
-  // setWebsocket,
-  setHighlightWords,
+  setWebsocket,
+  setTranslationHighlightWords,
+  setSpeechHighlightWords,
 }) => {
-  const [base64Media, setBase64Media] = useState(null);
+  const [mediaOnBase64, setMediaOnBase64] = useState(null);
+  const inputRef = useRef(null); // Create a reference to the file input element
+
   const handleFileChange = e => {
     const file = e.target.files[0];
     setSelectedFile(file);
-    // convert the uploaded file to base64
+
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onloadend = () => {
-      const base64data = reader.result.split(',')[1];
-      setBase64Media(base64data);
+    reader.onload = () => {
+      const mediaBase64 = reader.result;
+      setMediaOnBase64(mediaBase64);
     };
   };
 
-  // useEffect(() => {
-  //   initializeWebSocket(setWebsocket, 'ws://localhost:8000');
-  // }, [setWebsocket]);
+  useEffect(() => {
+    initializeWebSocket(setWebsocket, 'ws://localhost:8000/audio-stream');
+  }, [setWebsocket]);
 
   const sendToServer = data => {
+    console.log(JSON.stringify(data));
     if (websocket && websocket.readyState === WebSocket.OPEN) {
-      const data = {
-        from: fromLanguage,
-        to: toLanguage,
-        data: base64Media,
-      };
       websocket.send(JSON.stringify(data));
       websocket.onmessage = e => {
         const data = JSON.parse(e.data);
         setTranslation(data.translation);
         setText(data.text);
-        setHighlightWords(data.highlightedWords);
+        setTranslationHighlightWords(data.highlightedWords);
+        setSpeechHighlightWords(data.speechHighlitedWords);
       };
     }
   };
 
   const handleTranslation = () => {
+    // prepare data to send to the server
     const data = {
       from: fromLanguage,
       to: toLanguage,
-      text: text,
-      media: selectedFile,
+      data: mediaOnBase64,
     };
     sendToServer(data);
   };
 
   const handleFileDeletion = () => {
+    // remove the uploaded media premanently
     setSelectedFile(null);
+
+    // Clear the file input value
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
   };
 
   return (
-    <HStack width={'full'}>
+    <HStack>
       <Button
         isDisabled={
           fromLanguage && toLanguage && (text || selectedFile) ? false : true
@@ -77,8 +83,7 @@ const ControlPanel = ({
         onClick={handleTranslation}
         colorScheme="yellow"
         leftIcon={<Icon as={HiTranslate} />}
-        width={'full'}
-        size="sm"
+        size="md"
       >
         Translate
       </Button>
@@ -87,15 +92,15 @@ const ControlPanel = ({
         accept={'audio/*,video/*'}
         multiple
         handleChange={handleFileChange}
+        inputRef={inputRef}
       >
         <Button
           isDisabled={
             fromLanguage && toLanguage && !(isSpeaking || text) ? false : true
           }
-          width={'full'}
           leftIcon={<Icon as={IoIosCloudUpload} />}
           colorScheme="green"
-          size="sm"
+          size="md"
         >
           Upload
         </Button>
@@ -103,11 +108,9 @@ const ControlPanel = ({
 
       <Button
         isDisabled={selectedFile ? false : true}
-        width={'full'}
-        // leftIcon={<Icon as={DeleteIcon} />}
         onClick={handleFileDeletion}
         colorScheme="red"
-        size="sm"
+        size="md"
       >
         Remove media
       </Button>
