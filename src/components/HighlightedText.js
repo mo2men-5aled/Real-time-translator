@@ -13,7 +13,7 @@ const HighlightedText = ({
     return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
   }
 
-  const uniqueLabels = [...new Set(highlightWords.labels)]; // Get unique labels
+  const uniqueLabels = [...new Set(highlightWords.label)]; // Get unique labels
 
   const colorsList = {}; // Object to store data for each label
 
@@ -50,9 +50,9 @@ const HighlightedText = ({
     const words = text.split(' ');
 
     return words.map((word, index) => {
-      for (let i = 0; i < highlightWords.labels.length; i++) {
+      for (let i = 0; i < highlightWords.label.length; i++) {
         if (highlightWords.entity[i] === word) {
-          const colorLabel = highlightWords.labels[i];
+          const colorLabel = highlightWords.label[i];
           const color = colorsList[colorLabel].background;
           return (
             <Highlight

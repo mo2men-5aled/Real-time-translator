@@ -44,6 +44,7 @@ const TranslationPage = () => {
             fromLanguage={fromLanguage}
             toLanguage={toLanguage}
             selectedFile={selectedFile}
+            isSpeaking={isSpeaking}
             setIsSpeaking={setIsSpeaking}
             setTranslation={setTranslation}
             websocket={websocket}

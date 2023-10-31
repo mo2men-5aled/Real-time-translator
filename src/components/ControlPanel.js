@@ -37,7 +37,7 @@ const ControlPanel = ({
   };
 
   useEffect(() => {
-    initializeWebSocket(setWebsocket, 'ws://localhost:8000/audio-stream');
+    initializeWebSocket(setWebsocket, 'wss://smartmaxco.com/ws/app/translate/');
   }, [setWebsocket]);
 
   const sendToServer = data => {
@@ -46,10 +46,11 @@ const ControlPanel = ({
       websocket.send(JSON.stringify(data));
       websocket.onmessage = e => {
         const data = JSON.parse(e.data);
-        setTranslation(data.translation);
-        setText(data.text);
-        setTranslationHighlightWords(data.highlightedWords);
-        setSpeechHighlightWords(data.speechHighlitedWords);
+        console.log(data);
+        // setTranslation(data.translation);
+        // setText(data.text);
+        // setTranslationHighlightWords(data.highlightedWords);
+        // setSpeechHighlightWords(data.speechHighlitedWords);
       };
     }
   };

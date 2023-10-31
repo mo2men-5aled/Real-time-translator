@@ -5,11 +5,11 @@ import { BsFillMicFill, BsFillMicMuteFill } from 'react-icons/bs';
 
 const AudioStreamComponent = ({
   websocket,
-  text,
   setText,
   fromLanguage,
   toLanguage,
   selectedFile,
+  isSpeaking,
   setIsSpeaking,
   setTranslation,
   setTranslationHighlightWords,
@@ -25,9 +25,12 @@ const AudioStreamComponent = ({
       }
     };
 
-    setInterval(createAndSendAudioChunk, 2000);
-  }, [mediaRecorder]);
+    if (isSpeaking) {
+      setInterval(createAndSendAudioChunk, 2000);
+    }
+  }, [mediaRecorder, isSpeaking]);
 
+  console.log(isSpeaking);
   const startAudioStream = async () => {
     try {
       const permissionStatus = await navigator.permissions.query({
@@ -43,6 +46,8 @@ const AudioStreamComponent = ({
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: true,
         });
+
+        if (stream) setIsSpeaking(true);
 
         const recorder = new MediaRecorder(stream);
         const audioChunks = [];
@@ -71,9 +76,10 @@ const AudioStreamComponent = ({
               websocket.send(JSON.stringify(data));
               websocket.onmessage = e => {
                 const data = JSON.parse(e.data);
+                console.log(data);
                 setText(data.text);
                 setTranslation(data.translation);
-                setTranslationHighlightWords(data.translationHighlightWords);
+                setTranslationHighlightWords(data.highlightedWords);
                 setSpeechHighlightWords(data.speechHighlitedWords);
               };
             }
@@ -110,9 +116,7 @@ const AudioStreamComponent = ({
 
   return (
     <Button
-      isDisabled={
-        fromLanguage && toLanguage && !(text || selectedFile) ? false : true
-      }
+      isDisabled={fromLanguage && toLanguage && !selectedFile ? false : true}
       size={'md'}
       colorScheme={audioStream ? 'red' : 'blue'}
       onClick={audioStream ? stopAudioStream : startAudioStream}
