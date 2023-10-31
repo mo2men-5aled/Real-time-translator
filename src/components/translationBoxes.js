@@ -4,7 +4,6 @@ import HighlightedText from './HighlightedText';
 
 const TranslationBoxes = ({
   text,
-  setText,
   translation,
   translationHighlightWords,
   speechHighlightWords,

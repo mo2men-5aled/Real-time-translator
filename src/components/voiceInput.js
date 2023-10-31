@@ -17,37 +17,38 @@ const AudioStreamComponent = ({
 }) => {
   const [audioStream, setAudioStream] = useState(null);
   const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [sendAudioData, setSendAudioData] = useState(false);
 
   useEffect(() => {
     const createAndSendAudioChunk = () => {
-      if (mediaRecorder && mediaRecorder.state === 'recording') {
+      if (
+        mediaRecorder &&
+        mediaRecorder.state === 'recording' &&
+        sendAudioData
+      ) {
         mediaRecorder.requestData(); // Get the latest audio chunk
       }
     };
 
-    if (isSpeaking) {
-      setInterval(createAndSendAudioChunk, 2000);
-    }
-  }, [mediaRecorder, isSpeaking]);
+    let intervalId; // Store the interval ID to clear it when needed
 
-  console.log(isSpeaking);
+    if (sendAudioData) {
+      intervalId = setInterval(createAndSendAudioChunk, 5000);
+    } else {
+      clearInterval(intervalId); // Clear the interval if not sending audio data
+    }
+
+    return () => {
+      clearInterval(intervalId); // Cleanup the interval when the component unmounts
+    };
+  }, [mediaRecorder, isSpeaking, sendAudioData]);
+
   const startAudioStream = async () => {
     try {
-      const permissionStatus = await navigator.permissions.query({
-        name: 'microphone',
-      });
-
-      if (permissionStatus.state === 'denied') {
-        alert('Microphone permission denied');
-        return;
-      }
-
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: true,
         });
-
-        if (stream) setIsSpeaking(true);
 
         const recorder = new MediaRecorder(stream);
         const audioChunks = [];
@@ -88,8 +89,10 @@ const AudioStreamComponent = ({
 
         recorder.onstop = () => {
           stream.getTracks().forEach(track => track.stop());
+
           setAudioStream(null);
           setMediaRecorder(null);
+          setIsSpeaking(false);
         };
 
         recorder.start();
@@ -97,8 +100,7 @@ const AudioStreamComponent = ({
         setAudioStream(stream);
         setMediaRecorder(recorder);
         setIsSpeaking(true);
-      } else {
-        console.error('Browser does not support getUserMedia');
+        setSendAudioData(true);
       }
     } catch (error) {
       console.error('Error accessing the microphone:', error);
@@ -108,9 +110,10 @@ const AudioStreamComponent = ({
   };
 
   const stopAudioStream = () => {
-    setIsSpeaking(false);
     if (mediaRecorder) {
       mediaRecorder.stop();
+      setIsSpeaking(false);
+      setSendAudioData(false);
     }
   };
 

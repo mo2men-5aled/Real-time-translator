@@ -6,6 +6,7 @@ import { IoIosCloudUpload } from 'react-icons/io';
 import FileUpload from './fileUploadeButton';
 import { HiTranslate } from 'react-icons/hi';
 import initializeWebSocket from '../connection/wsConnection';
+import { useToast } from '@chakra-ui/react';
 
 const ControlPanel = ({
   fromLanguage,
@@ -24,6 +25,10 @@ const ControlPanel = ({
   const [mediaOnBase64, setMediaOnBase64] = useState(null);
   const inputRef = useRef(null); // Create a reference to the file input element
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  const toast = useToast();
+
   const handleFileChange = e => {
     const file = e.target.files[0];
     setSelectedFile(file);
@@ -37,21 +42,42 @@ const ControlPanel = ({
   };
 
   useEffect(() => {
-    initializeWebSocket(setWebsocket, 'wss://smartmaxco.com/ws/app/translate/');
-  }, [setWebsocket]);
+    initializeWebSocket(
+      setWebsocket,
+      'wss://smartmaxco.com/ws/app/translate/',
+      toast
+    );
+  }, [setWebsocket, toast]);
 
   const sendToServer = data => {
-    console.log(JSON.stringify(data));
     if (websocket && websocket.readyState === WebSocket.OPEN) {
       websocket.send(JSON.stringify(data));
+      toast({
+        title: 'Success',
+        description: 'File uploaded successfully',
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+        position: 'bottom-left',
+      });
+
       websocket.onmessage = e => {
         const data = JSON.parse(e.data);
-        console.log(data);
-        // setTranslation(data.translation);
-        // setText(data.text);
-        // setTranslationHighlightWords(data.highlightedWords);
-        // setSpeechHighlightWords(data.speechHighlitedWords);
+        setIsLoading(false);
+        setTranslation(data.translation);
+        setText(data.text);
+        setTranslationHighlightWords(data.highlightedWords);
+        setSpeechHighlightWords(data.speechHighlitedWords);
       };
+    } else {
+      toast({
+        title: 'Error',
+        description: 'Could not connect to the server',
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+        position: 'bottom-left',
+      });
     }
   };
 
@@ -62,6 +88,7 @@ const ControlPanel = ({
       to: toLanguage,
       data: mediaOnBase64,
     };
+    setIsLoading(true);
     sendToServer(data);
   };
 
@@ -85,6 +112,8 @@ const ControlPanel = ({
         colorScheme="yellow"
         leftIcon={<Icon as={HiTranslate} />}
         size="md"
+        isLoading={isLoading}
+        loadingText="Translating..."
       >
         Translate
       </Button>
