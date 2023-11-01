@@ -13,12 +13,20 @@ const MediaViewBox = ({ selectedFile }) => {
           <HStack
             width={'full'}
             justifyContent={'center'}
+            alignItems={'center'}
             marginBottom={'1rem'}
+            padding={8}
           >
-            <Text fontWeight="bold" fontSize={'lg'} textAlign={'center'}>
+            <Text
+              fontWeight="bold"
+              fontSize={'lg'}
+              textAlign={'center'}
+              width={'full'}
+            >
               Selected File:
             </Text>
             <Text
+              width={'full'}
               fontWeight="bold"
               fontSize={'lg'}
               textAlign={'center'}

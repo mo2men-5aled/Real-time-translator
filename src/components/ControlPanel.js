@@ -105,9 +105,7 @@ const ControlPanel = ({
   return (
     <HStack>
       <Button
-        isDisabled={
-          fromLanguage && toLanguage && (text || selectedFile) ? false : true
-        }
+        isDisabled={fromLanguage && toLanguage && selectedFile ? false : true}
         onClick={handleTranslation}
         colorScheme="yellow"
         leftIcon={<Icon as={HiTranslate} />}

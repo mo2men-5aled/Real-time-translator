@@ -28,6 +28,8 @@ const TranslationPage = () => {
       <LnaguageSelectors
         setFromLanguage={setFromLanguage}
         setToLanguage={setToLanguage}
+        fromLanguage={fromLanguage}
+        toLanguage={toLanguage}
         isSpeaking={isSpeaking}
       />
       <Wrap
