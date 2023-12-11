@@ -13,27 +13,6 @@ const HighlightedText = ({
     return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
   }
 
-  const uniqueLabels = [...new Set(highlightWords.label)]; // Get unique labels
-
-  const colorsList = {}; // Object to store data for each label
-
-  uniqueLabels.forEach(label => {
-    // Generate a random color in RGB format
-    const color = `rgb(${Math.floor(Math.random() * 255)}, ${Math.floor(
-      Math.random() * 255
-    )}, ${Math.floor(Math.random() * 255)})`;
-
-    // Calculate the luminance of the background color
-    const luminance = getLuminance(color);
-
-    // Determine text color based on luminance
-    const textColor = luminance > 0.5 ? 'black' : 'white';
-
-    colorsList[label] = {
-      background: color,
-      text: textColor,
-    };
-  });
   // Split the input text into chunks of four lines
   const textChunks = text.split(/[.!?]+/);
 
@@ -47,6 +26,28 @@ const HighlightedText = ({
 
   // Function to highlight words based on the rules
   const highlightText = text => {
+    const colorsList = {};
+
+    const uniqueLabels = [...new Set(highlightWords.label)]; // Get unique labels
+
+    uniqueLabels.forEach(label => {
+      // Generate a random color in RGB format
+      const color = `rgb(${Math.floor(Math.random() * 255)}, ${Math.floor(
+        Math.random() * 255
+      )}, ${Math.floor(Math.random() * 255)})`;
+
+      // Calculate the luminance of the background color
+      const luminance = getLuminance(color);
+
+      // Determine text color based on luminance
+      const textColor = luminance > 0.5 ? 'black' : 'white';
+
+      colorsList[label] = {
+        background: color,
+        text: textColor,
+      };
+    });
+
     const words = text.split(' ');
 
     return words.map((word, index) => {
@@ -118,7 +119,7 @@ const HighlightedText = ({
                     : { marginLeft: `${phraseIndex * 1.5}rem` }
                 }
               >
-                {highlightText(phrase)}
+                {highlightWords ? highlightText(phrase) : phrase + ' '}
               </Text>
             ))}
           </Box>
