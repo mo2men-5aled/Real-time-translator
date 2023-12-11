@@ -9,6 +9,10 @@ import ControlPanel from '../components/ControlPanel';
 import TranslationBoxes from '../components/translationBoxes';
 import MediaViewBox from '../components/MediaViewBox';
 
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from 'react-speech-recognition';
+
 const TranslationPage = () => {
   const [fromLanguage, setFromLanguage] = useState('');
   const [toLanguage, setToLanguage] = useState('');
@@ -16,12 +20,19 @@ const TranslationPage = () => {
   const [text, setText] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [translation, setTranslation] = useState('');
-  const [translationHighlightWords, setTranslationHighlightWords] = useState(
-    {}
-  );
-  const [speechHighlightWords, setSpeechHighlightWords] = useState({});
+  const [translationHighlightWords, setTranslationHighlightWords] =
+    useState(null);
+  const [speechHighlightWords, setSpeechHighlightWords] = useState(null);
 
   const [websocket, setWebsocket] = useState(null);
+  const [isRecording, setIsRecording] = useState(false);
+
+  const {
+    transcript,
+    listening,
+    browserSupportsSpeechRecognition,
+    resetTranscript,
+  } = useSpeechRecognition();
 
   return (
     <Box width={'full'}>
@@ -52,19 +63,16 @@ const TranslationPage = () => {
             websocket={websocket}
             setTranslationHighlightWords={setTranslationHighlightWords}
             setSpeechHighlightWords={setSpeechHighlightWords}
+            useSpeechRecognition={useSpeechRecognition}
+            SpeechRecognition={SpeechRecognition}
+            isRecording={isRecording}
+            listening={listening}
+            transcript={transcript}
+            resetTranscript={resetTranscript}
+            browserSupportsSpeechRecognition={browserSupportsSpeechRecognition}
           />
         </WrapItem>
 
-        <WrapItem>
-          <ResetBoxes
-            setText={setText}
-            setTranslation={setTranslation}
-            selectedFile={selectedFile}
-            isSpeaking={isSpeaking}
-            text={text}
-            translation={translation}
-          />
-        </WrapItem>
         <WrapItem>
           <ControlPanel
             fromLanguage={fromLanguage}
@@ -82,7 +90,16 @@ const TranslationPage = () => {
           />
         </WrapItem>
       </Wrap>
-      <MediaViewBox selectedFile={selectedFile} />
+      <MediaViewBox
+        selectedFile={selectedFile}
+        fromLanguage={fromLanguage}
+        setText={setText}
+        useSpeechRecognition={useSpeechRecognition}
+        SpeechRecognition={SpeechRecognition}
+        setIsRecording={setIsRecording}
+        listening={listening}
+        transcript={transcript}
+      />
       <TranslationBoxes
         text={text}
         setText={setText}
