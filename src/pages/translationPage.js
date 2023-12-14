@@ -50,7 +50,6 @@ const TranslationPage = () => {
           // handle the response
           websocket.onmessage = event => {
             const data = JSON.parse(event.data);
-            console.log(data);
             setTranslation(data.translation);
             setTranslationHighlightWords(data.translationHighlightedWords);
             setSpeechHighlightWords(data.transcriptionHighlightedWords);
@@ -105,7 +104,12 @@ const TranslationPage = () => {
             }
             size={'md'}
             colorScheme={'red'}
-            onClick={resetTranscript}
+            onClick={() => {
+              resetTranscript();
+              setTranslation('');
+              setTranslationHighlightWords(null);
+              setSpeechHighlightWords(null);
+            }}
           >
             Reset
           </Button>
