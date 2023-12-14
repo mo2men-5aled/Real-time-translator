@@ -1,9 +1,8 @@
-import { useState } from 'react';
-import { Box, Wrap, WrapItem } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
+import { Box, Wrap, WrapItem, Button } from '@chakra-ui/react';
 
 import LnaguageSelectors from '../components/languageSelectors';
 import Dictaphone from '../components/voiceInput';
-import ResetBoxes from '../components/resetButton';
 
 import ControlPanel from '../components/ControlPanel';
 import TranslationBoxes from '../components/translationBoxes';
@@ -16,8 +15,6 @@ import SpeechRecognition, {
 const TranslationPage = () => {
   const [fromLanguage, setFromLanguage] = useState('');
   const [toLanguage, setToLanguage] = useState('');
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [text, setText] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [translation, setTranslation] = useState('');
   const [translationHighlightWords, setTranslationHighlightWords] =
@@ -25,7 +22,6 @@ const TranslationPage = () => {
   const [speechHighlightWords, setSpeechHighlightWords] = useState(null);
 
   const [websocket, setWebsocket] = useState(null);
-  const [isRecording, setIsRecording] = useState(false);
 
   const {
     transcript,
@@ -34,6 +30,45 @@ const TranslationPage = () => {
     resetTranscript,
   } = useSpeechRecognition();
 
+  useEffect(() => {
+    if (listening) {
+      // Check if the transcript contains a complete sentence
+      if (
+        transcript.endsWith('.') ||
+        transcript.endsWith('!') ||
+        transcript.endsWith('?')
+      ) {
+        if (websocket && websocket.readyState === WebSocket.OPEN) {
+          websocket.send(
+            JSON.stringify({
+              transcript: transcript,
+              fromLanguage,
+              toLanguage,
+            })
+          );
+
+          // handle the response
+          websocket.onmessage = event => {
+            const data = JSON.parse(event.data);
+            console.log(data);
+            setTranslation(data.translation);
+            setTranslationHighlightWords(data.translationHighlightedWords);
+            setSpeechHighlightWords(data.transcriptionHighlightedWords);
+          };
+        }
+      }
+    } else {
+      if (transcript)
+        websocket.send(
+          JSON.stringify({
+            transcript: transcript,
+            fromLanguage,
+            toLanguage,
+          })
+        );
+    }
+  }, [listening, transcript, fromLanguage, toLanguage, websocket]);
+
   return (
     <Box width={'full'}>
       <LnaguageSelectors
@@ -41,7 +76,7 @@ const TranslationPage = () => {
         setToLanguage={setToLanguage}
         fromLanguage={fromLanguage}
         toLanguage={toLanguage}
-        isSpeaking={isSpeaking}
+        listening={listening}
       />
       <Wrap
         justify="center"
@@ -52,37 +87,38 @@ const TranslationPage = () => {
       >
         <WrapItem>
           <Dictaphone
-            text={text}
-            setText={setText}
             fromLanguage={fromLanguage}
             toLanguage={toLanguage}
-            selectedFile={selectedFile}
-            isSpeaking={isSpeaking}
-            setIsSpeaking={setIsSpeaking}
-            setTranslation={setTranslation}
-            websocket={websocket}
-            setTranslationHighlightWords={setTranslationHighlightWords}
-            setSpeechHighlightWords={setSpeechHighlightWords}
-            useSpeechRecognition={useSpeechRecognition}
             SpeechRecognition={SpeechRecognition}
-            isRecording={isRecording}
             listening={listening}
             transcript={transcript}
             resetTranscript={resetTranscript}
             browserSupportsSpeechRecognition={browserSupportsSpeechRecognition}
           />
         </WrapItem>
+        <WrapItem>
+          <Button
+            isDisabled={
+              fromLanguage && toLanguage && transcript && !listening
+                ? false
+                : true
+            }
+            size={'md'}
+            colorScheme={'red'}
+            onClick={resetTranscript}
+          >
+            Reset
+          </Button>
+        </WrapItem>
 
         <WrapItem>
           <ControlPanel
             fromLanguage={fromLanguage}
             toLanguage={toLanguage}
-            text={text}
-            setText={setText}
             setTranslation={setTranslation}
             setSelectedFile={setSelectedFile}
             selectedFile={selectedFile}
-            isSpeaking={isSpeaking}
+            listening={listening}
             websocket={websocket}
             setWebsocket={setWebsocket}
             setTranslationHighlightWords={setTranslationHighlightWords}
@@ -93,16 +129,12 @@ const TranslationPage = () => {
       <MediaViewBox
         selectedFile={selectedFile}
         fromLanguage={fromLanguage}
-        setText={setText}
         useSpeechRecognition={useSpeechRecognition}
         SpeechRecognition={SpeechRecognition}
-        setIsRecording={setIsRecording}
         listening={listening}
-        transcript={transcript}
       />
       <TranslationBoxes
-        text={text}
-        setText={setText}
+        transcript={transcript}
         translation={translation}
         translationHighlightWords={translationHighlightWords}
         speechHighlightWords={speechHighlightWords}

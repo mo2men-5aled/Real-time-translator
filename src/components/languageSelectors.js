@@ -7,7 +7,7 @@ const LnaguageSelectors = ({
   setToLanguage,
   fromLanguage,
   toLanguage,
-  isSpeaking,
+  listening,
 }) => {
   const languageOptions = [
     { value: 'en', label: 'English' },
@@ -25,7 +25,7 @@ const LnaguageSelectors = ({
   return (
     <HStack width={'full'} pt={'1rem'} pb={'1rem'}>
       <Select
-        isDisabled={isSpeaking ? true : false}
+        isDisabled={listening ? true : false}
         placeholder="Translate from"
         onChange={e => setFromLanguage(e.target.value)}
       >
@@ -44,7 +44,7 @@ const LnaguageSelectors = ({
       <Icon as={BsArrowRight} color="gray.500" viewBox="0 0 100% 4" />
 
       <Select
-        isDisabled={isSpeaking ? true : false}
+        isDisabled={listening ? true : false}
         placeholder="Translate to"
         onChange={e => setToLanguage(e.target.value)}
       >

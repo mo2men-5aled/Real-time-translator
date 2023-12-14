@@ -1,20 +1,7 @@
 import React, { useRef } from 'react';
-
 import { HStack, Box, Text } from '@chakra-ui/react';
-
-import VideoPlayer from './VideoPlayer';
-
 const MediaViewBox = React.memo(
-  ({
-    selectedFile,
-    fromLanguage,
-    setText,
-    useSpeechRecognition,
-    SpeechRecognition,
-    setIsRecording,
-    listening,
-    transcript,
-  }) => {
+  ({ selectedFile, fromLanguage, SpeechRecognition, listening }) => {
     const mediaRef = useRef(null);
 
     const handlePlay = () => {
@@ -24,7 +11,6 @@ const MediaViewBox = React.memo(
           continuous: true,
           language: fromLanguage, // Set the appropriate language
         });
-        setIsRecording(true);
       }
     };
 
@@ -32,14 +18,8 @@ const MediaViewBox = React.memo(
       // Stop speech recognition when the video is paused
       if (listening) {
         SpeechRecognition.stopListening();
-        setIsRecording(false);
       }
     };
-
-    // setText on transcription change
-    React.useEffect(() => {
-      setText(transcript);
-    }, [transcript, setText]);
 
     return (
       <Box width={'full'} mb={'1rem'}>
@@ -93,11 +73,22 @@ const MediaViewBox = React.memo(
                 />
               </audio>
             ) : (
-              <VideoPlayer
-                url={URL.createObjectURL(selectedFile)}
-                handlePause={handlePause}
-                handlePlay={handlePlay}
-              />
+              <Box width={'full'} position={'relative'} borderRadius={'lg'}>
+                <video
+                  ref={mediaRef}
+                  controls
+                  style={{
+                    width: '100%',
+                  }}
+                  onPlay={handlePlay}
+                  onPause={handlePause}
+                >
+                  <source
+                    src={URL.createObjectURL(selectedFile)}
+                    type={selectedFile.type}
+                  />
+                </video>
+              </Box>
             )}
           </Box>
         )}
