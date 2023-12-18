@@ -11,8 +11,6 @@ import { useToast } from '@chakra-ui/react';
 const ControlPanel = ({
   fromLanguage,
   toLanguage,
-  text,
-  setText,
   setTranslation,
   setSelectedFile,
   selectedFile,
@@ -65,7 +63,6 @@ const ControlPanel = ({
         const data = JSON.parse(e.data);
         setIsLoading(false);
         setTranslation(data.translation);
-        setText(data.text);
         setTranslationHighlightWords(data.highlightedWords);
         setSpeechHighlightWords(data.speechHighlitedWords);
       };
@@ -123,9 +120,7 @@ const ControlPanel = ({
         inputRef={inputRef}
       >
         <Button
-          isDisabled={
-            fromLanguage && toLanguage && !(isSpeaking || text) ? false : true
-          }
+          isDisabled={fromLanguage && toLanguage && !isSpeaking ? false : true}
           leftIcon={<Icon as={IoIosCloudUpload} />}
           colorScheme="green"
           size="md"
