@@ -30,7 +30,7 @@ const TranslationBoxes = ({
             Translation
           </Text>
           <HighlightedText
-            text={translation}
+            text={transcript}
             highlightWords={translationHighlightWords}
             toLanguage={toLanguage}
             discription={'Translated text will be displayed in this section'}
